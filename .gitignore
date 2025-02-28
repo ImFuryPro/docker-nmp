@@ -1,2 +1,4 @@
+/src/*
+!/src/public/
 /src/public/*
 !/src/public/index.php
