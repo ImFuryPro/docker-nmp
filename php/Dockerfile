@@ -29,8 +29,7 @@ RUN set -eux; \
             --with-webp \
             --with-xpm \
             --with-freetype; \
-    docker-php-ext-install gd; \
-    php -r 'var_dump(gd_info());'
+    docker-php-ext-install gd;
 
 # Imagick
 RUN apt-get update; \
