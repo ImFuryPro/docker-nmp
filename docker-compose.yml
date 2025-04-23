@@ -8,6 +8,40 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
+    ports:
+      - "9001:9000"
+    depends_on:
+      - mysql  
+    networks:
+      - tools_php-network
+
+  php-8.1:
+    build: ./php-8-1
+    working_dir: /var/www
+    container_name: php-8.1
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www
+      - ./php-ini/8.1/php.ini:/usr/local/etc/php/php.ini
+      - ./php-workers/8.1/supervisor.d:/etc/supervisor.d
+    ports:
+      - "9006:9000"
+    depends_on:
+      - mysql  
+    networks:
+      - tools_php-network
+
+  php-8.3:
+    build: ./php-8-3
+    working_dir: /var/www
+    container_name: php-8.3
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www
+      - ./php-ini/8.3/php.ini:/usr/local/etc/php/php.ini
+      - ./php-workers/8.3/supervisor.d:/etc/supervisor.d
+    ports:
+      - "9007:9000"
     depends_on:
       - mysql  
     networks:
@@ -24,6 +58,8 @@ services:
       - ./nginx:/etc/nginx/conf.d 
     depends_on:
       - php 
+      - php-8.1 
+      - php-8.3 
     networks:
       - tools_php-network  
 
