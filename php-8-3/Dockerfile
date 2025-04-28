@@ -15,7 +15,8 @@ RUN set -eux; \
             libwebp-dev \
             libxpm-dev \
             libmcrypt-dev \
-            libonig-dev; \
+            libonig-dev \
+            unixodbc-dev; \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \

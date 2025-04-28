@@ -2,3 +2,4 @@
 !/src/public/
 /src/public/*
 !/src/public/index.php
+.DS_Store

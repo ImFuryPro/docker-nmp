@@ -8,6 +8,8 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
+      - ./php-ini/7.4/php.ini:/usr/local/etc/php/php.ini
+      - ./php-workers/7.4/supervisor.d:/etc/supervisor.d
     ports:
       - "9001:9000"
     depends_on:
