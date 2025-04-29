@@ -14,6 +14,10 @@ docker-compose up
 ```
 docker-compose up --build -d
 ```
+#### Перезапуск контейнеров (после изменений в настройках)
+```
+docker-compose restart
+```
 ## Куда публиковать сайты
 Сайты публиковать в папку src/public
 
