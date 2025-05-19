@@ -44,9 +44,25 @@ RUN apt-get update && apt-get install -y gnupg2; \
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
     curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
     apt-get update; \
-    ACCEPT_EULA=Y apt-get -y --no-install-recommends install msodbcsql17 unixodbc-dev; \
+    ACCEPT_EULA=Y apt-get -y --no-install-recommends install msodbcsql18 unixodbc-dev; \
     pecl install sqlsrv; \ 
     pecl install pdo_sqlsrv; \
     docker-php-ext-enable sqlsrv pdo_sqlsrv;
+
+RUN apt-get install unixodbc unixodbc-dev -y \
+    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+    && docker-php-ext-install pdo_odbc
+
+# Node.js
+ENV NODE_VERSION=20.19.1
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN node --version
+RUN npm --version
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
