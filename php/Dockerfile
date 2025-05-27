@@ -15,6 +15,7 @@ RUN set -eux; \
             libwebp-dev \
             libxpm-dev \
             libmcrypt-dev \
+            libicu-dev \
             libonig-dev; \
     rm -rf /var/lib/apt/lists/*
 
@@ -23,6 +24,8 @@ RUN set -eux; \
     docker-php-ext-install mysqli; \
     docker-php-ext-install pdo_mysql; \
     docker-php-ext-install pdo_pgsql; \
+    docker-php-ext-configure intl; \
+    docker-php-ext-install intl; \
     docker-php-ext-configure gd \
             --prefix=/usr \
             --with-jpeg \
