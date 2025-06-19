@@ -55,11 +55,12 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
-      - "443:443"
+      - 443:443
     volumes:
       - ./src:/var/www
       - ./nginx/certs:/etc/nginx/certs
-      - ./nginx:/etc/nginx/conf.d 
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - php 
       - php-8.1 

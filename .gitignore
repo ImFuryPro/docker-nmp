@@ -7,3 +7,7 @@
 /nginx/certs/*
 !/nginx/certs/localhost.crt
 !/nginx/certs/localhost.key
+
+/nginx/conf.d/*
+!/nginx/conf.d/localhost.conf
+!/nginx/conf.d/localhost.conf
