@@ -3,3 +3,7 @@
 /src/public/*
 !/src/public/index.php
 .DS_Store
+
+/nginx/certs/*
+!/nginx/certs/localhost.crt
+!/nginx/certs/localhost.key
