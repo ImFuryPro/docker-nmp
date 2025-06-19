@@ -18,6 +18,14 @@ docker-compose up --build -d
 ```
 docker-compose restart
 ```
+#### Запуск/остановка/перезапуск определенного контейнера
+```
+docker container start/stop/restart container_name
+```
+#### Запуск командной строки внутри контейнера
+```
+docker exec -i -t container_name bash
+```
 ## Куда публиковать сайты?
 Сайты публиковать в папку src/public
 
