@@ -2,14 +2,13 @@ version: '1.0'
 
 services:
   php:
-    build: ./php
-    container_name: tools_php-php
+    build: ./php/7.4
+    container_name: tools_php-php-7.4
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
-      - ./php-ini/7.4/php.ini:/usr/local/etc/php/php.ini
-      - ./php-workers/7.4/supervisor.d:/etc/supervisor.d
+      - ./php/7.4/php.ini:/usr/local/etc/php/php.ini
     ports:
       - "9001:9000"
     depends_on:
@@ -18,14 +17,13 @@ services:
       - tools_php-network
 
   php-8.1:
-    build: ./php-8-1
+    build: ./php/8.1
     working_dir: /var/www
-    container_name: php-8.1
+    container_name: tools_php-php-8.1
     restart: unless-stopped
     volumes:
       - ./src:/var/www
-      - ./php-ini/8.1/php.ini:/usr/local/etc/php/php.ini
-      - ./php-workers/8.1/supervisor.d:/etc/supervisor.d
+      - ./php/8.1/php.ini:/usr/local/etc/php/php.ini
     ports:
       - "9006:9000"
     depends_on:
@@ -34,14 +32,13 @@ services:
       - tools_php-network
 
   php-8.3:
-    build: ./php-8-3
+    build: ./php/8.3/
     working_dir: /var/www
-    container_name: php-8.3
+    container_name: tools_php-php-8.3
     restart: unless-stopped
     volumes:
       - ./src:/var/www
-      - ./php-ini/8.3/php.ini:/usr/local/etc/php/php.ini
-      - ./php-workers/8.3/supervisor.d:/etc/supervisor.d
+      - ./php/8.3/php.ini:/usr/local/etc/php/php.ini
     ports:
       - "9007:9000"
     depends_on:
@@ -75,7 +72,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=123456
     volumes:
-      - mysql_php:/mysql.sql  
+      - mysql_php:/mysql.sql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - tools_php-network
 
