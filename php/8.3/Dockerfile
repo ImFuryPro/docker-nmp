@@ -71,4 +71,7 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 
+# Bitrix CLI
+RUN npm i -g node-sass @bitrix/cli
+
 COPY --from=composer /usr/bin/composer /usr/bin/composer
