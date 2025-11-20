@@ -11,3 +11,6 @@
 /nginx/conf.d/*
 !/nginx/conf.d/localhost.conf
 !/nginx/conf.d/localhost.conf
+
+/mysql/databases/*
+!/mysql/databases/.gitkeep

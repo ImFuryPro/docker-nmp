@@ -61,7 +61,7 @@ services:
     depends_on:
       - php 
       - php-8.1 
-      - php-8.3 
+      - php-8.3
     networks:
       - tools_php-network  
 
@@ -74,6 +74,7 @@ services:
     volumes:
       - mysql_php:/mysql.sql
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/databases:/var/www/mysql_db
     networks:
       - tools_php-network
 
@@ -85,7 +86,7 @@ services:
       - PMA_ARBITRARY=1
       - UPLOAD_LIMIT=1024M
       - MEMORY_LIMIT=1024M
-      - MAX_EXECUTION_TIME=300  
+      - MAX_EXECUTION_TIME=300
     ports:
       - 8000:80
     depends_on:

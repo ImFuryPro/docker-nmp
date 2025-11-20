@@ -18,6 +18,7 @@ RUN set -eux; \
             libicu-dev \
             libzip-dev \
             zip \
+            wget \
             libonig-dev; \
     rm -rf /var/lib/apt/lists/*
 
@@ -45,14 +46,17 @@ RUN apt-get update; \
 
 # sqlsrv pdo_sqlsrv
 ENV ACCEPT_EULA=Y
-RUN apt-get update && apt-get install -y gnupg2; \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
-    apt-get update; \
-    ACCEPT_EULA=Y apt-get -y --no-install-recommends install msodbcsql18 unixodbc-dev; \
-    pecl install sqlsrv; \ 
-    pecl install pdo_sqlsrv; \
-    docker-php-ext-enable sqlsrv pdo_sqlsrv;
+RUN apt-get update && \
+    apt-get install -y gnupg apt-transport-https unixodbc-dev && \
+    curl -sSL -O https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y msodbcsql18 mssql-tools18 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pecl install sqlsrv pdo_sqlsrv && \
+    docker-php-ext-enable sqlsrv pdo_sqlsrv
     
 RUN apt-get install unixodbc unixodbc-dev -y \
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
@@ -69,6 +73,19 @@ RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
+
+# Установка альтернативной версии Python 3.11 для установки node-sass для @bitrix/cli
+# Если не нужна работа с битриксом, то вполне можно все это благополоучно не ставить
+RUN cd /usr/src \
+    && wget https://www.python.org/ftp/python/3.11.0/Python-3.11.0.tgz \
+    && tar -xzf Python-3.11.0.tgz \
+    && cd Python-3.11.0 \
+    && ./configure --enable-optimizations \
+    && make \
+    && make altinstall
+
+# Ставим альтернативную версию Python на команду python3
+RUN ln -fs /usr/src/Python-3.11.0/python /usr/bin/python3
 
 # Bitrix CLI
 RUN npm i -g node-sass @bitrix/cli
