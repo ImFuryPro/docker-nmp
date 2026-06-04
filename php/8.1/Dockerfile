@@ -40,28 +40,56 @@ RUN set -eux; \
     docker-php-ext-install gd;
 
 # Imagick
-RUN apt-get update; \
-    apt-get install -y libmagickwand-dev; \
-    pecl install imagick; \
-    docker-php-ext-enable imagick;
-
-# sqlsrv pdo_sqlsrv
-ENV ACCEPT_EULA=Y
 RUN apt-get update && \
-    apt-get install -y gnupg apt-transport-https unixodbc-dev && \
-    curl -sSL -O https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    rm packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y msodbcsql18 mssql-tools18 && \
+    apt-get install -y --no-install-recommends libmagickwand-dev && \
+    mkdir -p /usr/src/php/ext/imagick && \
+    curl -fsSL https://github.com/Imagick/imagick/archive/refs/tags/3.7.0.tar.gz \
+        | tar xvz -C /usr/src/php/ext/imagick --strip 1 && \
+    docker-php-ext-install imagick && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pecl install sqlsrv pdo_sqlsrv && \
-    docker-php-ext-enable sqlsrv pdo_sqlsrv
-    
-RUN apt-get install unixodbc unixodbc-dev -y \
-    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install pdo_odbc
+# sqlsrv pdo_sqlsrv
+# Зависимости + Microsoft ODBC Driver
+# 1. Системные зависимости
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg2 \
+    apt-transport-https \
+    unixodbc-dev \
+    g++ \
+    make \
+    autoconf \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Microsoft ODBC Driver
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+        | gpg --dearmor > /usr/share/keyrings/microsoft-prod.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" \
+        > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Сборка — запускать configure из корня source (не из подпапок!)
+RUN curl -fsSL https://github.com/microsoft/msphpsql/archive/refs/tags/v5.11.1.tar.gz \
+        -o /tmp/msphpsql.tar.gz \
+    && tar -xzf /tmp/msphpsql.tar.gz -C /tmp \
+    # sqlsrv — phpize и configure внутри sqlsrv, но с указанием shared-хедеров
+    && cd /tmp/msphpsql-5.11.1/source/sqlsrv \
+    && cp -r ../shared ./shared \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    # pdo_sqlsrv — то же самое
+    && cd /tmp/msphpsql-5.11.1/source/pdo_sqlsrv \
+    && cp -r ../shared ./shared \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && docker-php-ext-enable sqlsrv pdo_sqlsrv \
+    && rm -rf /tmp/msphpsql*
 
 # Node.js
 ENV NODE_VERSION=20.19.1

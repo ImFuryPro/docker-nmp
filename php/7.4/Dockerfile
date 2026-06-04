@@ -38,10 +38,13 @@ RUN set -eux; \
     docker-php-ext-install gd;
 
 # Imagick
-RUN apt-get update; \
-    apt-get install -y libmagickwand-dev; \
-    pecl install imagick; \
-    docker-php-ext-enable imagick;
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libmagickwand-dev && \
+    mkdir -p /usr/src/php/ext/imagick && \
+    curl -fsSL https://github.com/Imagick/imagick/archive/refs/tags/3.7.0.tar.gz \
+        | tar xvz -C /usr/src/php/ext/imagick --strip 1 && \
+    docker-php-ext-install imagick && \
+    rm -rf /var/lib/apt/lists/*
 
 # Node.js
 ENV NODE_VERSION=14.18.1

@@ -1,5 +1,3 @@
-version: '1.4'
-
 services:
   php:
     build: ./php/7.4
