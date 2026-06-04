@@ -1,4 +1,4 @@
-version: '1.0'
+version: '1.4'
 
 services:
   php:
@@ -46,6 +46,21 @@ services:
     networks:
       - tools_php-network
 
+  php-5.6:
+    build: ./php/5.6/
+    working_dir: /var/www
+    container_name: tools_php-php-5.6
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www
+      - ./php/5.6/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - "9008:9000"
+    depends_on:
+      - mysql  
+    networks:
+      - tools_php-network
+
   nginx:
     image: nginx:stable-alpine
     container_name: tools_php-nginx
@@ -59,9 +74,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
-      - php 
-      - php-8.1 
+      - php
+      - php-8.1
       - php-8.3
+      - php-5.6
     networks:
       - tools_php-network  
 

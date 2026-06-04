@@ -19,6 +19,7 @@ RUN set -eux; \
             libicu-dev \
             libzip-dev \
             zip \
+            unzip \
             wget \
             unixodbc-dev; \
     rm -rf /var/lib/apt/lists/*
@@ -31,6 +32,7 @@ RUN set -eux; \
     docker-php-ext-configure intl; \
     docker-php-ext-install intl; \
     docker-php-ext-install zip; \
+    docker-php-ext-install exif; \
     docker-php-ext-configure gd \
             --prefix=/usr \
             --with-jpeg \
@@ -40,10 +42,14 @@ RUN set -eux; \
     docker-php-ext-install gd;
 
 # Imagick
-RUN apt-get update; \
-    apt-get install -y libmagickwand-dev; \
-    pecl install imagick; \
-    docker-php-ext-enable imagick;
+RUN apt-get update \
+    && apt-get install --assume-yes --no-install-recommends --quiet \
+        build-essential \
+        libmagickwand-dev \
+    && apt-get clean all
+
+RUN pecl install imagick \
+    && docker-php-ext-enable imagick
 
 # sqlsrv pdo_sqlsrv
 ENV ACCEPT_EULA=Y
@@ -92,3 +98,6 @@ RUN ln -fs /usr/src/Python-3.11.0/python /usr/bin/python3
 RUN npm i -g node-sass @bitrix/cli
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+# Laravel
+RUN composer global require laravel/installer;

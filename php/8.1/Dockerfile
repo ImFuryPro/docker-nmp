@@ -30,6 +30,7 @@ RUN set -eux; \
     docker-php-ext-configure intl; \
     docker-php-ext-install intl; \
     docker-php-ext-install zip; \
+    docker-php-ext-install exif; \
     docker-php-ext-configure gd \
             --prefix=/usr \
             --with-jpeg \
