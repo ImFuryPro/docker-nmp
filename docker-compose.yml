@@ -1,3 +1,8 @@
+x-metadata:
+  author: "Иван Сапоненко <imfurypro@yandex.ru>"
+  version: "2.1"
+  description: "Docker окружение Nginx + PHP + MySQL + PHPMyAdmin"
+
 services:
   php:
     build: ./php/7.4
